@@ -1,0 +1,213 @@
+/* Custom styles for Expense Tracker */
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: #f8f9fa;
+}
+
+/* Header Styles */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+/* Card Enhancements */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+  padding: 1rem 1.25rem;
+}
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+  background-color: #f8f9fa;
+}
+
+/* Badge Styles */
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+/* Table Enhancements */
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Expense Item Styles */
+.quick-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Color Suggestion Buttons */
+.color-suggestion {
+  min-width: 60px;
+  transition: transform 0.2s ease;
+}
+
+.color-suggestion:hover {
+  transform: scale(1.1);
+}
+
+/* Alert Enhancements */
+.alert {
+  border-radius: 0.5rem;
+}
+
+/* Chart Containers */
+canvas {
+  max-width: 100%;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+}
+
+/* Animation for new items */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Loading States */
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Form Enhancements */
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Improved input groups */
+.input-group-text {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+/* Category color preview */
+#colorPreview {
+  transition: all 0.3s ease;
+}
+
+/* Week number badge */
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+/* Improved table spacing */
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+/* Dashboard card hover effect */
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+/* Month navigation */
+.btn-group .btn {
+  min-width: 100px;
+}
+
+/* Expense amount highlighting */
+.text-danger {
+  font-weight: 600;
+}
+
+/* Status badges */
+.badge.bg-success,
+.badge.bg-danger,
+.badge.bg-info,
+.badge.bg-warning {
+  font-size: 0.875rem;
+}
+
+/* Improved spacing */
+.mb-3 {
+  margin-bottom: 1rem !important;
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+}
+
+.py-5 {
+  padding-top: 3rem !important;
+  padding-bottom: 3rem !important;
+}
+
+/* Print styles */
+@media print {
+  .navbar,
+  .btn,
+  .footer,
+  .no-print {
+    display: none !important;
+  }
+  
+  .card {
+    box-shadow: none;
+    border: 1px solid #dee2e6;
+    break-inside: avoid;
+  }
+}

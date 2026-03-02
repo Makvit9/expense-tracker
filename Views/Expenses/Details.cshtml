@@ -1,0 +1,97 @@
+@model Expense
+
+@{
+    ViewData["Title"] = "Expense Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Expense Details
+                </h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Date</dt>
+                    <dd class="col-sm-9">
+                        <strong>@Model.Date.ToString("MMMM dd, yyyy")</strong>
+                        <span class="text-muted">(@Model.Date.ToString("dddd"))</span>
+                        <br />
+                        <span class="badge bg-secondary mt-1">Week @Model.WeekNumber</span>
+                    </dd>
+
+                    <dt class="col-sm-3">Item Name</dt>
+                    <dd class="col-sm-9">
+                        <h5>@Model.ItemName</h5>
+                    </dd>
+
+                    <dt class="col-sm-3">Category</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge fs-6" style="background-color: @Model.Category.ColorCode">
+                            @Model.Category.Name
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-3">Amount</dt>
+                    <dd class="col-sm-9">
+                        <h3 class="text-danger mb-0">@Model.Amount.ToString("C")</h3>
+                    </dd>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <dt class="col-sm-3">Notes</dt>
+                        <dd class="col-sm-9">
+                            <div class="alert alert-light">
+                                @Model.Notes
+                            </div>
+                        </dd>
+                    }
+
+                    <dt class="col-sm-3">Month/Year</dt>
+                    <dd class="col-sm-9">
+                        @(new DateTime(Model.Year, Model.Month, 1).ToString("MMMM yyyy"))
+                    </dd>
+
+                    <dt class="col-sm-3">Created</dt>
+                    <dd class="col-sm-9">
+                        <small class="text-muted">
+                            <i class="far fa-clock"></i> @Model.CreatedDate.ToString("MMMM dd, yyyy hh:mm tt")
+                        </small>
+                    </dd>
+                </dl>
+
+                <hr />
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                    <a asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Context Card - Similar expenses -->
+        <div class="card mt-3">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-info"></i> Did You Know?</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0 text-muted">
+                    <i class="fas fa-lightbulb text-warning"></i>
+                    You can quickly add similar expenses by using the item name autocomplete feature when creating new expenses.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

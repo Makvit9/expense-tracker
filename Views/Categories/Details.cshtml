@@ -1,0 +1,104 @@
+@model Category
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-info-circle"></i> Category Details
+                </h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">
+                        <h4>
+                            <span class="badge" style="background-color: @Model.ColorCode">
+                                @Model.Name
+                            </span>
+                        </h4>
+                    </dd>
+
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <dt class="col-sm-3">Description</dt>
+                        <dd class="col-sm-9">
+                            <div class="alert alert-light">
+                                @Model.Description
+                            </div>
+                        </dd>
+                    }
+
+                    <dt class="col-sm-3">Color Code</dt>
+                    <dd class="col-sm-9">
+                        <strong>@Model.ColorCode</strong>
+                        <span class="badge ms-3" style="background-color: @Model.ColorCode; width: 80px; height: 40px; display: inline-block;">
+                            &nbsp;
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-3">Display Order</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge bg-secondary">Position @Model.DisplayOrder</span>
+                    </dd>
+
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                            <small class="text-muted d-block mt-1">
+                                This category appears when adding new expenses
+                            </small>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary fs-6">
+                                <i class="fas fa-times-circle"></i> Inactive
+                            </span>
+                            <small class="text-muted d-block mt-1">
+                                This category is hidden from new expense entries
+                            </small>
+                        }
+                    </dd>
+                </dl>
+
+                <hr />
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Info -->
+        <div class="card mt-3">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Category Usage</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0 text-muted">
+                    <i class="fas fa-info-circle"></i>
+                    This category is used to organize your expenses. You can change its color, name, and order anytime. 
+                    If you deactivate it, existing expenses will still keep this category, but it won't appear when adding new expenses.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

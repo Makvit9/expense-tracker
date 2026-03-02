@@ -1,0 +1,319 @@
+@model MonthlyDashboardViewModel
+
+@{
+    ViewData["Title"] = $"Dashboard - {Model.MonthName}";
+}
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>
+                <i class="fas fa-chart-line"></i> @Model.MonthName Dashboard
+            </h1>
+            <div class="btn-group">
+                <a asp-action="Index" asp-route-month="@(Model.Month == 1 ? 12 : Model.Month - 1)" 
+                   asp-route-year="@(Model.Month == 1 ? Model.Year - 1 : Model.Year)" 
+                   class="btn btn-outline-secondary">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+                <button type="button" class="btn btn-outline-secondary" disabled>@Model.MonthName</button>
+                <a asp-action="Index" asp-route-month="@(Model.Month == 12 ? 1 : Model.Month + 1)" 
+                   asp-route-year="@(Model.Month == 12 ? Model.Year + 1 : Model.Year)" 
+                   class="btn btn-outline-secondary">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Total Income</h6>
+                <h3 class="card-title text-success">
+                    <i class="fas fa-dollar-sign"></i> @Model.Summary.TotalIncome.ToString("N2")
+                </h3>
+                <small class="text-muted">
+                    Salary: @Model.Summary.Salary.ToString("N2")
+                    @if (Model.Summary.AdditionalIncome > 0)
+                    {
+                        <br /><span>+ @Model.Summary.AdditionalIncome.ToString("N2") overtime</span>
+                    }
+                </small>
+                <div class="mt-2">
+                    <a asp-action="EditSalary" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                       class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Total Spending</h6>
+                <h3 class="card-title text-danger">
+                    <i class="fas fa-shopping-cart"></i> @Model.Summary.TotalSpending.ToString("N2")
+                </h3>
+                <small class="text-muted">@Model.Expenses.Count expense(s)</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Balance</h6>
+                <h3 class="card-title @(Model.Summary.Balance >= 0 ? "text-info" : "text-warning")">
+                    <i class="fas fa-balance-scale"></i> @Model.Summary.Balance.ToString("N2")
+                </h3>
+                <small class="text-muted">
+                    @if (Model.Summary.TotalIncome > 0)
+                    {
+                        var percentage = (Model.Summary.TotalSpending / Model.Summary.TotalIncome) * 100;
+                        <span>@percentage.ToString("N1")% spent</span>
+                    }
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-muted">Quick Actions</h6>
+                <a asp-controller="Expenses" asp-action="Create" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                   class="btn btn-primary btn-sm mb-2">
+                    <i class="fas fa-plus"></i> Add Expense
+                </a>
+                <br />
+                <a asp-controller="Expenses" asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                   class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list"></i> View All
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Spending by Category</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Category Breakdown</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.CategoryBreakdown.Any())
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-end">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model.CategoryBreakdown.OrderByDescending(c => c.Value))
+                            {
+                                var percentage = Model.Summary.TotalSpending > 0 
+                                    ? (category.Value / Model.Summary.TotalSpending) * 100 
+                                    : 0;
+                                <tr>
+                                    <td>@category.Key</td>
+                                    <td class="text-end">@category.Value.ToString("N2")</td>
+                                    <td class="text-end">@percentage.ToString("N1")%</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">No expenses recorded yet.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Weekly Breakdown -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Weekly Spending Trend</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="weeklyChart" style="max-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Expenses -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-receipt"></i> Recent Expenses</h5>
+                <a asp-controller="Expenses" asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                   class="btn btn-sm btn-light">
+                    View All
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.Expenses.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Week</th>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var expense in Model.Expenses.Take(10))
+                                {
+                                    <tr>
+                                        <td><span class="badge bg-secondary">Week @expense.WeekNumber</span></td>
+                                        <td>@expense.Date.ToString("MMM dd")</td>
+                                        <td>@expense.ItemName</td>
+                                        <td>
+                                            <span class="badge" style="background-color: @expense.Category.ColorCode">
+                                                @expense.Category.Name
+                                            </span>
+                                        </td>
+                                        <td class="text-end">@expense.Amount.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No expenses recorded this month.</p>
+                        <a asp-controller="Expenses" asp-action="Create" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                           class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Your First Expense
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Wait for DOM and Chart.js to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to ensure Chart.js is fully loaded
+            setTimeout(function() {
+                // Category Pie Chart
+                const categoryChartElement = document.getElementById('categoryChart');
+                if (categoryChartElement) {
+                    const categoryCtx = categoryChartElement.getContext('2d');
+                    const categoryData = @Html.Raw(Json.Serialize(Model.CategoryBreakdown.Select(c => new { 
+                        label = c.Key, 
+                        value = c.Value 
+                    })));
+                    
+                    if (categoryData && categoryData.length > 0) {
+                        new Chart(categoryCtx, {
+                            type: 'pie',
+                            data: {
+                                labels: categoryData.map(d => d.label),
+                                datasets: [{
+                                    data: categoryData.map(d => d.value),
+                                    backgroundColor: [
+                                        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+                                        '#DDA15E', '#BC6C25', '#E76F51', '#2A9D8F', '#E9C46A'
+                                    ]
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'right'
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                // Weekly Bar Chart
+                const weeklyChartElement = document.getElementById('weeklyChart');
+                if (weeklyChartElement) {
+                    const weeklyCtx = weeklyChartElement.getContext('2d');
+                    const weeklyData = @Html.Raw(Json.Serialize(Model.WeeklyBreakdown.Select(w => new { 
+                        week = w.Key, 
+                        amount = w.Value 
+                    })));
+                    
+                    if (weeklyData && weeklyData.length > 0) {
+                        new Chart(weeklyCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: weeklyData.map(d => 'Week ' + d.week),
+                                datasets: [{
+                                    label: 'Spending',
+                                    data: weeklyData.map(d => d.amount),
+                                    backgroundColor: '#0d6efd',
+                                    borderColor: '#0d6efd',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '$' + value.toFixed(2);
+                                            }
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }, 100); // 100ms delay to ensure Chart.js is ready
+        });
+    </script>
+}

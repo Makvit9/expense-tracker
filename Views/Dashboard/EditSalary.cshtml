@@ -1,0 +1,109 @@
+@model MonthlySummary
+
+@{
+    ViewData["Title"] = "Edit Salary - " + ViewBag.MonthName;
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-money-bill-wave"></i> Set Income for @ViewBag.MonthName
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="EditSalary" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Month" />
+                    <input type="hidden" asp-for="Year" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Salary" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                            <input asp-for="Salary" class="form-control form-control-lg" placeholder="Enter your base salary" />
+                        </div>
+                        <span asp-validation-for="Salary" class="text-danger"></span>
+                        <small class="form-text text-muted">Your regular monthly salary</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="AdditionalIncome" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-plus"></i></span>
+                            <input asp-for="AdditionalIncome" class="form-control" placeholder="Enter overtime or bonuses" />
+                        </div>
+                        <span asp-validation-for="AdditionalIncome" class="text-danger"></span>
+                        <small class="form-text text-muted">Overtime, bonuses, or other additional income</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Optional notes about this month's income"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.Salary > 0 || Model.AdditionalIncome > 0)
+                    {
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">Income Summary</h6>
+                            <p class="mb-0">
+                                Base Salary: <strong>@Model.Salary.ToString("C")</strong><br />
+                                Additional Income: <strong>@Model.AdditionalIncome.ToString("C")</strong><br />
+                                <strong>Total Income: @Model.TotalIncome.ToString("C")</strong>
+                            </p>
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Save Income
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" class="btn btn-link">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Auto-calculate total as user types
+        $('#Salary, #AdditionalIncome').on('input', function() {
+            var salary = parseFloat($('#Salary').val()) || 0;
+            var additional = parseFloat($('#AdditionalIncome').val()) || 0;
+            var total = salary + additional;
+            
+            if (total > 0) {
+                if ($('.alert-info').length === 0) {
+                    var alertHtml = '<div class="alert alert-info mt-3">' +
+                        '<h6 class="alert-heading">Income Summary</h6>' +
+                        '<p class="mb-0" id="incomeSummary"></p>' +
+                        '</div>';
+                    $('button[type="submit"]').before(alertHtml);
+                }
+                
+                $('#incomeSummary').html(
+                    'Base Salary: <strong>$' + salary.toFixed(2) + '</strong><br />' +
+                    'Additional Income: <strong>$' + additional.toFixed(2) + '</strong><br />' +
+                    '<strong>Total Income: $' + total.toFixed(2) + '</strong>'
+                );
+            } else {
+                $('.alert-info').remove();
+            }
+        });
+    </script>
+}

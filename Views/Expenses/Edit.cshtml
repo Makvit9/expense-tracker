@@ -1,0 +1,114 @@
+@model Expense
+
+@{
+    ViewData["Title"] = "Edit Expense";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit"></i> Edit Expense
+                </h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedDate" />
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Date" class="form-label"></label>
+                            <input asp-for="Date" class="form-control" type="date" />
+                            <span asp-validation-for="Date" class="text-danger"></span>
+                            <small class="form-text text-muted">Week number will update automatically</small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Amount" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input asp-for="Amount" class="form-control" step="0.01" />
+                            </div>
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ItemName" class="form-label"></label>
+                        <input asp-for="ItemName" class="form-control" list="frequentItems" />
+                        <datalist id="frequentItems">
+                            @foreach (var item in ViewBag.FrequentItems as List<string>)
+                            {
+                                <option value="@item"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="ItemName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label"></label>
+                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label"></label>
+                        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+
+                    <!-- Hidden fields -->
+                    <input type="hidden" asp-for="Month" />
+                    <input type="hidden" asp-for="Year" />
+                    <input type="hidden" asp-for="WeekNumber" />
+
+                    <div class="alert alert-light border">
+                        <small class="text-muted">
+                            <i class="far fa-clock"></i> Created: @Model.CreatedDate.ToString("MMM dd, yyyy hh:mm tt")
+                        </small>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Update Expense
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Index" asp-route-month="@Model.Month" asp-route-year="@Model.Year" 
+               class="btn btn-link">
+                <i class="fas fa-arrow-left"></i> Back to Expenses
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Currency formatting for amount input
+            $('#Amount').on('blur', function() {
+                var val = $(this).val();
+                if (val) {
+                    $(this).val(parseFloat(val).toFixed(2));
+                }
+            });
+        });
+    </script>
+}
