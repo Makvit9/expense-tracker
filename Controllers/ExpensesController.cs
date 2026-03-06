@@ -63,7 +63,7 @@ namespace ExpenseTracker.Controllers
         {
             var currentMonth = month ?? DateTime.Now.Month;
             var currentYear = year ?? DateTime.Now.Year;
-            var currentDate = DateTime.Now;
+            var currentDate = DateTime.UtcNow;
 
             var expense = new Expense
             {
@@ -98,7 +98,8 @@ namespace ExpenseTracker.Controllers
                 expense.WeekNumber = GetWeekOfMonth(expense.Date);
                 expense.Month = expense.Date.Month;
                 expense.Year = expense.Date.Year;
-                expense.CreatedDate = DateTime.Now;
+                expense.CreatedDate = DateTime.UtcNow;
+                expense.Date = DateTime.SpecifyKind(expense.Date, DateTimeKind.Utc);
 
                 _context.Add(expense);
                 await _context.SaveChangesAsync();
@@ -163,10 +164,13 @@ namespace ExpenseTracker.Controllers
             {
                 try
                 {
-                    // Recalculate week number if date changed
+                    // Recalculate week number if date changed 
+
                     expense.WeekNumber = GetWeekOfMonth(expense.Date);
                     expense.Month = expense.Date.Month;
                     expense.Year = expense.Date.Year;
+                    expense.Date = DateTime.SpecifyKind(expense.Date, DateTimeKind.Utc);    
+                    expense.CreatedDate = DateTime.SpecifyKind(expense.CreatedDate, DateTimeKind.Utc);
 
                     _context.Update(expense);
                     await _context.SaveChangesAsync();

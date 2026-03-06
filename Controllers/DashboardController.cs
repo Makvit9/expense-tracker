@@ -152,14 +152,14 @@ namespace ExpenseTracker.Controllers
                     existingSummary.Salary = summary.Salary;
                     existingSummary.AdditionalIncome = summary.AdditionalIncome;
                     existingSummary.Notes = summary.Notes;
-                    existingSummary.UpdatedDate = DateTime.Now;
+                    existingSummary.UpdatedDate = DateTime.UtcNow;
                     
                     _context.Update(existingSummary);
                 }
                 else
                 {
-                    summary.CreatedDate = DateTime.Now;
-                    summary.UpdatedDate = DateTime.Now;
+                    summary.CreatedDate = DateTime.UtcNow;
+                    summary.UpdatedDate = DateTime.UtcNow;
                     _context.Add(summary);
                 }
 
