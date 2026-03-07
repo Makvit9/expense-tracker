@@ -53,7 +53,7 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); --- IGNORE Because we are using HTTP ---
 app.UseStaticFiles();
 
 app.UseRouting();
