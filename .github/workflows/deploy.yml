@@ -1,0 +1,100 @@
+# ============================================================
+# GitHub Actions Workflow: Build & Deploy Expense Tracker
+# ============================================================
+
+# The name shown in the "Actions" tab on GitHub
+name: Build and Deploy
+
+# -------------------------------------------------------
+# TRIGGER: When does this workflow run?
+# -------------------------------------------------------
+on:
+  push:
+    branches:
+      - main    # Run ONLY when you push to the "main" branch.
+                # A push to any other branch (e.g. "feature/login")
+                # will NOT trigger this workflow.
+
+# -------------------------------------------------------
+# JOBS: The actual work to be done.
+# A workflow can have many jobs. Ours has just one: "deploy".
+# -------------------------------------------------------
+jobs:
+  deploy:
+    # The type of machine GitHub will spin up to run this job.
+    runs-on: ubuntu-latest
+
+    # ----------------------------------------------------
+    # STEPS: Ordered list of tasks inside the job.
+    # Each step either runs a shell command or calls
+    # a pre-built "Action" from the GitHub marketplace.
+    # ----------------------------------------------------
+    steps:
+
+      # STEP 1 — Check out your code
+      # "uses" means we're calling a pre-built Action.
+      # actions/checkout@v4 is the official GitHub Action that
+      # downloads repository code onto the runner machine
+      # The following steps can work with it.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # STEP 2 — Install the .NET 10 SDK
+      # actions/setup-dotnet is another official Action.
+      # It installs the exact .NET SDK version we specify.
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'   
+
+      # STEP 3 — Restore NuGet packages
+      # "run" means: execute shell commands directly.
+      # "dotnet restore" reads your .csproj file and downloads
+      # all NuGet packages listed there (EF Core, Npgsql, etc.)
+      # into the runner's package cache.
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # STEP 4 — Build the project
+      # Compiles C# code into binaries.
+      # --no-restore: skips re-downloading packages 
+      # --configuration Release: builds in optimised "Release" mode,
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      # STEP 5 — Publish (create deployable output)
+      # "dotnet publish" compiles + bundles everything needed to
+      # run the app (DLLs, static files, config) into one folder.
+      # -o ./publish: puts the output in a folder called "publish"
+      # --no-build: skips recompiling since we just built above.
+      - name: Publish
+        run: dotnet publish --no-build --configuration Release -o ./publish
+
+      # STEP 6 — Copy the published files to your Azure VM
+      # We use "appleboy/scp-action", a popular community Action
+      # that wraps the standard "scp" (secure copy) command.
+      - name: Copy files to VM via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}           
+          username: ${{ secrets.VM_USERNAME }}   
+          key: ${{ secrets.VM_SSH_KEY }}         
+          source: "./publish/*"                  
+          target: "/var/www/expensetracker/"     # Output
+          strip_components: 1                    # Removes the "publish/" prefix from paths,
+                                                 # so files land directly in /var/www/expensetracker/
+
+      # STEP 7 — Restart the systemd service on the VM
+      # appleboy/ssh-action runs shell commands ON VM over SSH —
+      - name: Restart app service on VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            # add sudo for systemctl.
+            sudo systemctl restart expensetracker.service
+
+            # Print the service status to the GitHub Actions log
+            sudo systemctl status expensetracker.service --no-pager
