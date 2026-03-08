@@ -1,4 +1,4 @@
-@model List<object>
+@model List<YearlyMonthData>
 
 @{
     ViewData["Title"] = "Yearly Comparison - " + ViewBag.Year;
@@ -62,21 +62,23 @@
                                 decimal totalIncome = 0;
                                 decimal totalSpending = 0;
                             }
-                            @foreach (dynamic month in Model)
+                            @foreach (var month in Model)
                             {
-                                totalIncome += month.income;
-                                totalSpending += month.totalSpending;
-                                var savingsRate = month.income > 0 ? ((month.income - month.totalSpending) / month.income) * 100 : 0;
-                                
+                                totalIncome += month.Income;
+                                totalSpending += month.TotalSpending;
+                                var savingsRate = month.Income > 0
+                                    ? ((month.Income - month.TotalSpending) / month.Income) * 100
+                                    : 0;
+
                                 <tr>
-                                    <td><strong>@month.month</strong></td>
-                                    <td class="text-end text-success">@((decimal)month.income).ToString("C")</td>
-                                    <td class="text-end text-danger">@((decimal)month.totalSpending).ToString("C")</td>
-                                    <td class="text-end @(month.balance >= 0 ? "text-info" : "text-warning")">
-                                        @((decimal)month.balance).ToString("C")
+                                    <td><strong>@month.Month</strong></td>
+                                    <td class="text-end text-success">@month.Income.ToString("C")</td>
+                                    <td class="text-end text-danger">@month.TotalSpending.ToString("C")</td>
+                                    <td class="text-end @(month.Balance >= 0 ? "text-info" : "text-warning")">
+                                        @month.Balance.ToString("C")
                                     </td>
                                     <td class="text-end">
-                                        @if (month.income > 0)
+                                        @if (month.Income > 0)
                                         {
                                             <span class="badge @(savingsRate >= 20 ? "bg-success" : savingsRate >= 10 ? "bg-info" : "bg-warning")">
                                                 @savingsRate.ToString("N1")%
@@ -88,7 +90,7 @@
                                         }
                                     </td>
                                     <td class="text-end">
-                                        <a asp-action="Index" asp-route-month="@month.monthNumber" asp-route-year="@ViewBag.Year" 
+                                        <a asp-controller="Expenses" asp-action="Index" asp-route-month="@month.MonthNumber" asp-route-year="@ViewBag.Year"
                                            class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i> View
                                         </a>
@@ -102,7 +104,7 @@
                                 <th class="text-end text-success">@totalIncome.ToString("C")</th>
                                 <th class="text-end text-danger">@totalSpending.ToString("C")</th>
                                 <th class="text-end @(totalIncome - totalSpending >= 0 ? "text-info" : "text-warning")">
-                                    @(totalIncome - totalSpending).ToString("C")
+                                    @((totalIncome - totalSpending).ToString("C"))
                                 </th>
                                 <th class="text-end">
                                     @if (totalIncome > 0)
@@ -127,7 +129,7 @@
     <script>
         const ctx = document.getElementById('yearlyChart').getContext('2d');
         const yearlyData = @Html.Raw(Json.Serialize(Model));
-        
+
         new Chart(ctx, {
             type: 'line',
             data: {

@@ -222,7 +222,7 @@ namespace ExpenseTracker.Controllers
         {
             var currentYear = year ?? DateTime.Now.Year;
 
-            var yearlyData = new List<object>();
+            var yearlyData = new List<YearlyMonthData>();
 
             for (int month = 1; month <= 12; month++)
             {
@@ -233,13 +233,13 @@ namespace ExpenseTracker.Controllers
                 var summary = await _context.MonthlySummaries
                     .FirstOrDefaultAsync(m => m.Month == month && m.Year == currentYear);
 
-                yearlyData.Add(new
+                yearlyData.Add(new YearlyMonthData
                 {
-                    month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
-                    monthNumber = month,
-                    totalSpending = expenses.Sum(e => e.Amount),
-                    income = summary?.TotalIncome ?? 0,
-                    balance = (summary?.TotalIncome ?? 0) - expenses.Sum(e => e.Amount)
+                    Month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month),
+                    MonthNumber = month,
+                    TotalSpending = expenses.Sum(e => e.Amount),
+                    Income = summary?.TotalIncome ?? 0,
+                    Balance = (summary?.TotalIncome ?? 0) - expenses.Sum(e => e.Amount)
                 });
             }
 
