@@ -31,7 +31,7 @@ namespace ExpenseTracker.Models
 
         [Display(Name = "Notes")]
         [StringLength(500)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         [Display(Name = "Created Date")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;

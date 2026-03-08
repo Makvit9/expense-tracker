@@ -6,16 +6,16 @@ namespace ExpenseTracker.Models.ViewModels
     {
         public int Month { get; set; }
         public int Year { get; set; }
-        public string MonthName { get; set; }
+        public string MonthName { get; set; } = string.Empty;
         
-        public MonthlySummary Summary { get; set; }
+        public MonthlySummary Summary { get; set; } = new();
         
-        public List<Expense> Expenses { get; set; }
+        public List<Expense> Expenses { get; set; } = new();
         
-        public Dictionary<string, decimal> CategoryBreakdown { get; set; }
+        public Dictionary<string, decimal> CategoryBreakdown { get; set; } = new();
         
-        public Dictionary<int, decimal> WeeklyBreakdown { get; set; }
+        public Dictionary<int, decimal> WeeklyBreakdown { get; set; } = new();
         
-        public List<string> FrequentItems { get; set; }
+        public List<string> FrequentItems { get; set; } = new();
     }
 }

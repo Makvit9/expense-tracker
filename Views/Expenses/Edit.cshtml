@@ -40,7 +40,7 @@
                         <label asp-for="ItemName" class="form-label"></label>
                         <input asp-for="ItemName" class="form-control" list="frequentItems" />
                         <datalist id="frequentItems">
-                            @foreach (var item in ViewBag.FrequentItems as List<string>)
+                            @foreach (var item in ViewBag.FrequentItems as List<string> ?? new List<string>())
                             {
                                 <option value="@item"></option>
                             }

@@ -193,7 +193,7 @@ namespace ExpenseTracker.Controllers
             }
 
             var currentOrder = category.DisplayOrder;
-            Category swapCategory = null;
+            Category? swapCategory = null;
 
             if (direction == "up" && currentOrder > 1)
             {

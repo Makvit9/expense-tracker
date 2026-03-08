@@ -111,8 +111,8 @@ namespace ExpenseTracker.Controllers
             Console.WriteLine("❌ ModelState is INVALID. Errors:");
             foreach (var key in ModelState.Keys)
             {
-                var errors = ModelState[key].Errors;
-                if (errors.Count > 0)
+                var errors = ModelState[key]?.Errors;
+                if (errors?.Count > 0)
                 {
                     foreach (var error in errors)
                     {

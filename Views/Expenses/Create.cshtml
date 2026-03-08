@@ -39,7 +39,7 @@
                         <input asp-for="ItemName" class="form-control" id="itemNameInput"
                                placeholder="e.g., Parliament cigarettes, Coffee, Groceries" list="frequentItems" />
                         <datalist id="frequentItems">
-                            @foreach (var item in ViewBag.FrequentItems as List<string>)
+                            @foreach (var item in ViewBag.FrequentItems as List<string> ?? new List<string>())
                             {
                                 <option value="@item"></option>
                             }
@@ -92,7 +92,7 @@
         </div>
 
         <!-- Recent Expenses Helper -->
-        @if (ViewBag.FrequentItems != null && (ViewBag.FrequentItems as List<string>).Any())
+        @if ((ViewBag.FrequentItems as List<string>)?.Any() == true)
         {
             <div class="card mt-3">
                 <div class="card-header bg-light">
@@ -100,7 +100,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-wrap gap-2">
-                        @foreach (var item in ViewBag.FrequentItems as List<string>)
+                        @foreach (var item in ViewBag.FrequentItems as List<string> ?? new List<string>())
                         {
                             <button type="button" class="btn btn-sm btn-outline-secondary quick-item" data-item="@item">
                                 @item

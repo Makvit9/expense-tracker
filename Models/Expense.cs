@@ -17,14 +17,14 @@ namespace ExpenseTracker.Models
         [Required]
         [Display(Name = "Item Name")]
         [StringLength(200)]
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "Category")]
         public int CategoryId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public virtual Category Category { get; set; }
+        public virtual Category Category { get; set; } = new();
 
         [Required]
         [Display(Name = "Amount")]

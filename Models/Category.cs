@@ -11,7 +11,7 @@ namespace ExpenseTracker.Models
         [Required]
         [Display(Name = "Category Name")]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Display(Name = "Description")]
         [StringLength(500)]
@@ -19,7 +19,7 @@ namespace ExpenseTracker.Models
 
         [Display(Name = "Color Code")]
         [StringLength(7)]
-        public string ColorCode { get; set; } // For UI visualization (e.g., #FF5733)
+        public string ColorCode { get; set; } = string.Empty; // For UI visualization (e.g., #FF5733)
 
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
