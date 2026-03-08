@@ -45,12 +45,12 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseExceptionHandler("/Dashboard/Index");
+    app.UseHsts();
 }
 else
 {
-    app.UseExceptionHandler("/Dashboard/Index");
-    app.UseHsts();
+    app.UseDeveloperExceptionPage();
 }
 
 // app.UseHttpsRedirection(); --- IGNORE Because we are using HTTP ---
