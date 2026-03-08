@@ -49,7 +49,7 @@ namespace ExpenseTracker.Controllers
             var expense = await _context.Expenses
                 .Include(e => e.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            
+
             if (expense == null)
             {
                 return NotFound();
@@ -75,11 +75,11 @@ namespace ExpenseTracker.Controllers
 
             ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive).OrderBy(c => c.DisplayOrder), "Id", "Name");
             ViewBag.FrequentItems = GetFrequentItems();
-            
+
             return View(expense);
         }
 
-[HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Expense expense)
         {
@@ -88,10 +88,10 @@ namespace ExpenseTracker.Controllers
             Console.WriteLine($"ItemName: {expense.ItemName}");
             Console.WriteLine($"CategoryId: {expense.CategoryId}");
             Console.WriteLine($"Amount: {expense.Amount}");
-            
+
             // Remove navigation properties from validation
             ModelState.Remove("Category");
-            
+
             if (ModelState.IsValid)
             {
                 // Auto-calculate week number based on date
@@ -103,11 +103,11 @@ namespace ExpenseTracker.Controllers
 
                 _context.Add(expense);
                 await _context.SaveChangesAsync();
-                
+
                 Console.WriteLine($"✅ Expense saved successfully: {expense.ItemName}");
                 return RedirectToAction(nameof(Index), new { month = expense.Month, year = expense.Year });
             }
-            
+
             Console.WriteLine("❌ ModelState is INVALID. Errors:");
             foreach (var key in ModelState.Keys)
             {
@@ -120,10 +120,10 @@ namespace ExpenseTracker.Controllers
                     }
                 }
             }
-            
+
             ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive).OrderBy(c => c.DisplayOrder), "Id", "Name", expense.CategoryId);
             ViewBag.FrequentItems = GetFrequentItems();
-            
+
             return View(expense);
         }
 
@@ -140,10 +140,10 @@ namespace ExpenseTracker.Controllers
             {
                 return NotFound();
             }
-            
+
             ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive).OrderBy(c => c.DisplayOrder), "Id", "Name", expense.CategoryId);
             ViewBag.FrequentItems = GetFrequentItems();
-            
+
             return View(expense);
         }
 
@@ -169,7 +169,7 @@ namespace ExpenseTracker.Controllers
                     expense.WeekNumber = GetWeekOfMonth(expense.Date);
                     expense.Month = expense.Date.Month;
                     expense.Year = expense.Date.Year;
-                    expense.Date = DateTime.SpecifyKind(expense.Date, DateTimeKind.Utc);    
+                    expense.Date = DateTime.SpecifyKind(expense.Date, DateTimeKind.Utc);
                     expense.CreatedDate = DateTime.SpecifyKind(expense.CreatedDate, DateTimeKind.Utc);
 
                     _context.Update(expense);
@@ -188,10 +188,10 @@ namespace ExpenseTracker.Controllers
                 }
                 return RedirectToAction(nameof(Index), new { month = expense.Month, year = expense.Year });
             }
-            
+
             ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive).OrderBy(c => c.DisplayOrder), "Id", "Name", expense.CategoryId);
             ViewBag.FrequentItems = GetFrequentItems();
-            
+
             return View(expense);
         }
 
@@ -206,7 +206,7 @@ namespace ExpenseTracker.Controllers
             var expense = await _context.Expenses
                 .Include(e => e.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            
+
             if (expense == null)
             {
                 return NotFound();
@@ -225,15 +225,49 @@ namespace ExpenseTracker.Controllers
             {
                 var month = expense.Month;
                 var year = expense.Year;
-                
+
                 _context.Expenses.Remove(expense);
                 await _context.SaveChangesAsync();
-                
+
                 return RedirectToAction(nameof(Index), new { month = month, year = year });
             }
 
             return RedirectToAction(nameof(Index));
         }
+
+
+        // Export to CSV
+        public async Task<IActionResult> ExportCsv(int? month, int? year)
+        {
+            var currentMonth = month ?? DateTime.Now.Month;
+            var currentYear = year ?? DateTime.Now.Year;
+
+            var expenses = await _context.Expenses
+                .Include(e => e.Category)
+                .Where(e => e.Month == currentMonth && e.Year == currentYear)
+                .OrderBy(e => e.Date)
+                .ToListAsync();
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Date,Item Name,Category,Amount,Week,Notes");
+
+            foreach (var expense in expenses)
+    {
+        sb.AppendLine($"{expense.Date:yyyy-MM-dd}," +
+                      $"{expense.ItemName}," +
+                      $"{expense.Category.Name}," +
+                      $"{expense.Amount}," +
+                      $"Week {expense.WeekNumber}," +
+                      $"{expense.Notes}");
+    }
+
+            var fileName = $"Expenses_{currentMonth}_{currentYear}.csv";
+            return File(System.Text.Encoding.UTF8.GetBytes(sb.ToString()), "text/csv", fileName);
+
+        }
+
+
+
 
         // Helper method to get week number of a date within a month
         private int GetWeekOfMonth(DateTime date)
@@ -241,10 +275,10 @@ namespace ExpenseTracker.Controllers
             DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
             int dayOfMonth = date.Day;
             int firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
-            
+
             // Calculate week number (1-based)
             int weekNumber = (dayOfMonth + firstDayOfWeek - 1) / 7 + 1;
-            
+
             return Math.Min(weekNumber, 5); // Cap at week 5
         }
 
