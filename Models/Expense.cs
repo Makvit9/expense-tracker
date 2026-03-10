@@ -23,8 +23,9 @@ namespace ExpenseTracker.Models
         [Display(Name = "Category")]
         public int CategoryId { get; set; }
 
+        [Required]
         [ForeignKey("CategoryId")]
-        public virtual Category Category { get; set; } = new();
+        public virtual Category Category { get; set; } = null!;
 
         [Required]
         [Display(Name = "Amount")]
@@ -48,6 +49,6 @@ namespace ExpenseTracker.Models
         public string? Notes { get; set; }
 
         [Display(Name = "Created Date")]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     }
 }
