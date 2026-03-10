@@ -50,9 +50,9 @@
                         <div class="alert alert-info">
                             <h6 class="alert-heading">Income Summary</h6>
                             <p class="mb-0">
-                                Base Salary: <strong>@Model.Salary.ToString("C")</strong><br />
-                                Additional Income: <strong>@Model.AdditionalIncome.ToString("C")</strong><br />
-                                <strong>Total Income: @Model.TotalIncome.ToString("C")</strong>
+                                Base Salary: <strong>$@Model.Salary.ToString("F2")</strong><br />
+                                Additional Income: <strong>$@Model.AdditionalIncome.ToString("F2")</strong><br />
+                                <strong>Total Income: $@Model.TotalIncome.ToString("F2")</strong>
                             </p>
                         </div>
                     }

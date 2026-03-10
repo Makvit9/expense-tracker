@@ -36,7 +36,7 @@
 
                     <dt class="col-sm-3">Amount</dt>
                     <dd class="col-sm-9">
-                        <h3 class="text-danger mb-0">@Model.Amount.ToString("C")</h3>
+                        <h3 class="text-danger mb-0">$@Model.Amount.ToString("F2")</h3>
                     </dd>
 
                     @if (!string.IsNullOrEmpty(Model.Notes))

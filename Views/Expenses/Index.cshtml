@@ -49,7 +49,7 @@
             <div class="card border-danger">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Total Amount</h6>
-                    <h3 class="text-danger">@Model.Sum(e => e.Amount).ToString("C")</h3>
+                    <h3 class="text-danger">$@Model.Sum(e => e.Amount).ToString("F2")</h3>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
             <div class="card border-warning">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Average Expense</h6>
-                    <h3 class="text-warning">@Model.Average(e => e.Amount).ToString("C")</h3>
+                    <h3 class="text-warning">$@Model.Average(e => e.Amount).ToString("F2")</h3>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
                             <span class="badge bg-secondary">Week @week</span>
                             <span class="text-muted ms-2">@weekExpenses.Count expense(s)</span>
                         </h5>
-                        <strong class="text-danger">Total: @weekExpenses.Sum(e => e.Amount).ToString("C")</strong>
+                        <strong class="text-danger">Total: $@weekExpenses.Sum(e => e.Amount).ToString("F2")</strong>
                     </div>
                 </div>
                 <div class="collapse show" id="@collapseId">
@@ -112,7 +112,7 @@
                                                     @expense.Category.Name
                                                 </span>
                                             </td>
-                                            <td class="text-end">@expense.Amount.ToString("C")</td>
+                                            <td class="text-end">$@expense.Amount.ToString("F2")</td>
                                             <td>
                                                 @if (!string.IsNullOrEmpty(expense.Notes))
                                                 {
@@ -135,7 +135,7 @@
                                 <tfoot class="table-light">
                                     <tr>
                                         <td colspan="3" class="text-end"><strong>Week @week Subtotal:</strong></td>
-                                        <td class="text-end"><strong>@weekExpenses.Sum(e => e.Amount).ToString("C")</strong></td>
+                                        <td class="text-end"><strong>$@weekExpenses.Sum(e => e.Amount).ToString("F2")</strong></td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tfoot>
@@ -152,7 +152,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Monthly Total</h4>
-                <h3 class="text-primary mb-0">@Model.Sum(e => e.Amount).ToString("C")</h3>
+                <h3 class="text-primary mb-0">$@Model.Sum(e => e.Amount).ToString("F2")</h3>
             </div>
         </div>
     </div>

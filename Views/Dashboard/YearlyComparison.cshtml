@@ -72,10 +72,10 @@
 
                                 <tr>
                                     <td><strong>@month.Month</strong></td>
-                                    <td class="text-end text-success">@month.Income.ToString("C")</td>
-                                    <td class="text-end text-danger">@month.TotalSpending.ToString("C")</td>
+                                    <td class="text-end text-success">$@month.Income.ToString("F2")</td>
+                                    <td class="text-end text-danger">$@month.TotalSpending.ToString("F2")</td>
                                     <td class="text-end @(month.Balance >= 0 ? "text-info" : "text-warning")">
-                                        @month.Balance.ToString("C")
+                                           $@month.Balance.ToString("F2")
                                     </td>
                                     <td class="text-end">
                                         @if (month.Income > 0)
@@ -101,10 +101,10 @@
                         <tfoot class="table-light">
                             <tr>
                                 <th>Total</th>
-                                <th class="text-end text-success">@totalIncome.ToString("C")</th>
-                                <th class="text-end text-danger">@totalSpending.ToString("C")</th>
+                                <th class="text-end text-success">$@totalIncome.ToString("F2")</th>
+                                <th class="text-end text-danger">$@totalSpending.ToString("F2")</th>
                                 <th class="text-end @(totalIncome - totalSpending >= 0 ? "text-info" : "text-warning")">
-                                    @((totalIncome - totalSpending).ToString("C"))
+                                    $@((totalIncome - totalSpending).ToString("F2"))
                                 </th>
                                 <th class="text-end">
                                     @if (totalIncome > 0)

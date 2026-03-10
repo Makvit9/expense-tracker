@@ -41,7 +41,7 @@
 
                             <dt class="col-sm-3">Amount</dt>
                             <dd class="col-sm-9">
-                                <strong class="text-danger fs-5">@Model.Amount.ToString("C")</strong>
+                                <strong class="text-danger fs-5">$@Model.Amount.ToString("F2")</strong>
                             </dd>
 
                             @if (!string.IsNullOrEmpty(Model.Notes))
