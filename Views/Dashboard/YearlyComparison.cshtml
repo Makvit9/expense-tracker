@@ -11,11 +11,13 @@
                 <i class="fas fa-calendar-alt"></i> @ViewBag.Year Overview
             </h1>
             <div class="btn-group">
-                <a asp-action="YearlyComparison" asp-route-year="@(ViewBag.Year - 1)" class="btn btn-outline-secondary">
+                <a asp-action="YearlyComparison" asp-route-year="@(ViewBag.Year - 1)"
+                   class="btn btn-outline-secondary">
                     <i class="fas fa-chevron-left"></i> @(ViewBag.Year - 1)
                 </a>
                 <button type="button" class="btn btn-outline-secondary" disabled>@ViewBag.Year</button>
-                <a asp-action="YearlyComparison" asp-route-year="@(ViewBag.Year + 1)" class="btn btn-outline-secondary">
+                <a asp-action="YearlyComparison" asp-route-year="@(ViewBag.Year + 1)"
+                   class="btn btn-outline-secondary">
                     @(ViewBag.Year + 1) <i class="fas fa-chevron-right"></i>
                 </a>
             </div>
@@ -23,7 +25,7 @@
     </div>
 </div>
 
-<!-- Yearly Summary -->
+<!-- Chart -->
 <div class="row mb-4">
     <div class="col-md-12">
         <div class="card">
@@ -31,22 +33,30 @@
                 <h5 class="mb-0"><i class="fas fa-chart-line"></i> Monthly Comparison</h5>
             </div>
             <div class="card-body">
-                <canvas id="yearlyChart" style="max-height: 400px;"></canvas>
+                <canvas id="yearlyChart" style="max-height:400px;"></canvas>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Monthly Breakdown Table -->
+<!-- Monthly Breakdown -->
+@{
+    decimal totalIncome   = Model.Sum(m => m.Income);
+    decimal totalSpending = Model.Sum(m => m.TotalSpending);
+    decimal totalBalance  = totalIncome - totalSpending;
+}
+
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0"><i class="fas fa-table"></i> Monthly Details</h5>
             </div>
-            <div class="card-body">
+
+            <!-- ══ DESKTOP TABLE ══ -->
+            <div class="expense-table-wrap">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
                                 <th>Month</th>
@@ -58,24 +68,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @{
-                                decimal totalIncome = 0;
-                                decimal totalSpending = 0;
-                            }
                             @foreach (var month in Model)
                             {
-                                totalIncome += month.Income;
-                                totalSpending += month.TotalSpending;
                                 var savingsRate = month.Income > 0
-                                    ? ((month.Income - month.TotalSpending) / month.Income) * 100
-                                    : 0;
-
+                                    ? ((month.Income - month.TotalSpending) / month.Income) * 100 : 0;
                                 <tr>
                                     <td><strong>@month.Month</strong></td>
                                     <td class="text-end text-success">$@month.Income.ToString("F2")</td>
                                     <td class="text-end text-danger">$@month.TotalSpending.ToString("F2")</td>
                                     <td class="text-end @(month.Balance >= 0 ? "text-info" : "text-warning")">
-                                           $@month.Balance.ToString("F2")
+                                        $@month.Balance.ToString("F2")
                                     </td>
                                     <td class="text-end">
                                         @if (month.Income > 0)
@@ -86,11 +88,13 @@
                                         }
                                         else
                                         {
-                                            <span class="text-muted">-</span>
+                                            <span class="text-muted">—</span>
                                         }
                                     </td>
                                     <td class="text-end">
-                                        <a asp-controller="Expenses" asp-action="Index" asp-route-month="@month.MonthNumber" asp-route-year="@ViewBag.Year"
+                                        <a asp-controller="Expenses" asp-action="Index"
+                                           asp-route-month="@month.MonthNumber"
+                                           asp-route-year="@ViewBag.Year"
                                            class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-eye"></i> View
                                         </a>
@@ -103,15 +107,15 @@
                                 <th>Total</th>
                                 <th class="text-end text-success">$@totalIncome.ToString("F2")</th>
                                 <th class="text-end text-danger">$@totalSpending.ToString("F2")</th>
-                                <th class="text-end @(totalIncome - totalSpending >= 0 ? "text-info" : "text-warning")">
-                                    $@((totalIncome - totalSpending).ToString("F2"))
+                                <th class="text-end @(totalBalance >= 0 ? "text-info" : "text-warning")">
+                                    $@totalBalance.ToString("F2")
                                 </th>
                                 <th class="text-end">
                                     @if (totalIncome > 0)
                                     {
-                                        var yearSavings = ((totalIncome - totalSpending) / totalIncome) * 100;
-                                        <span class="badge @(yearSavings >= 20 ? "bg-success" : yearSavings >= 10 ? "bg-info" : "bg-warning")">
-                                            @yearSavings.ToString("N1")%
+                                        var yr = ((totalIncome - totalSpending) / totalIncome) * 100;
+                                        <span class="badge @(yr >= 20 ? "bg-success" : yr >= 10 ? "bg-info" : "bg-warning")">
+                                            @yr.ToString("N1")%
                                         </span>
                                     }
                                 </th>
@@ -121,6 +125,82 @@
                     </table>
                 </div>
             </div>
+
+            <!-- ══ MOBILE CARD LIST ══ -->
+            <div class="expense-mobile-list">
+                @foreach (var month in Model)
+                {
+                    var savingsRate = month.Income > 0
+                        ? ((month.Income - month.TotalSpending) / month.Income) * 100 : 0;
+
+                    <div class="yearly-row">
+                        <!-- Month name + savings badge -->
+                        <div class="yearly-row__header">
+                            <span class="yearly-row__month">@month.Month</span>
+                            @if (month.Income > 0)
+                            {
+                                <span class="badge @(savingsRate >= 20 ? "bg-success" : savingsRate >= 10 ? "bg-info" : "bg-warning")">
+                                    @savingsRate.ToString("N1")%
+                                </span>
+                            }
+                            <a asp-controller="Expenses" asp-action="Index"
+                               asp-route-month="@month.MonthNumber"
+                               asp-route-year="@ViewBag.Year"
+                               class="btn btn-sm btn-outline-primary ms-auto">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                        <!-- Three figures -->
+                        <div class="yearly-row__figures">
+                            <div class="yearly-row__fig">
+                                <span class="yearly-row__label">Income</span>
+                                <span class="yearly-row__val text-success">$@month.Income.ToString("F2")</span>
+                            </div>
+                            <div class="yearly-row__fig">
+                                <span class="yearly-row__label">Spent</span>
+                                <span class="yearly-row__val text-danger">$@month.TotalSpending.ToString("F2")</span>
+                            </div>
+                            <div class="yearly-row__fig">
+                                <span class="yearly-row__label">Balance</span>
+                                <span class="yearly-row__val @(month.Balance >= 0 ? "text-info" : "text-warning")">
+                                    $@month.Balance.ToString("F2")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Mobile year totals -->
+                <div class="yearly-row yearly-row--total">
+                    <div class="yearly-row__header">
+                        <span class="yearly-row__month">Year Total</span>
+                        @if (totalIncome > 0)
+                        {
+                            var yr = ((totalIncome - totalSpending) / totalIncome) * 100;
+                            <span class="badge @(yr >= 20 ? "bg-success" : yr >= 10 ? "bg-info" : "bg-warning")">
+                                @yr.ToString("N1")%
+                            </span>
+                        }
+                    </div>
+                    <div class="yearly-row__figures">
+                        <div class="yearly-row__fig">
+                            <span class="yearly-row__label">Income</span>
+                            <span class="yearly-row__val text-success">$@totalIncome.ToString("F2")</span>
+                        </div>
+                        <div class="yearly-row__fig">
+                            <span class="yearly-row__label">Spent</span>
+                            <span class="yearly-row__val text-danger">$@totalSpending.ToString("F2")</span>
+                        </div>
+                        <div class="yearly-row__fig">
+                            <span class="yearly-row__label">Balance</span>
+                            <span class="yearly-row__val @(totalBalance >= 0 ? "text-info" : "text-warning")">
+                                $@totalBalance.ToString("F2")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -138,24 +218,24 @@
                     {
                         label: 'Income',
                         data: yearlyData.map(d => d.income),
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,.1)',
                         tension: 0.4,
                         fill: true
                     },
                     {
                         label: 'Spending',
                         data: yearlyData.map(d => d.totalSpending),
-                        borderColor: '#dc3545',
-                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239,68,68,.1)',
                         tension: 0.4,
                         fill: true
                     },
                     {
                         label: 'Balance',
                         data: yearlyData.map(d => d.balance),
-                        borderColor: '#17a2b8',
-                        backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6,182,212,.1)',
                         tension: 0.4,
                         fill: true
                     }
@@ -164,31 +244,17 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
+                interaction: { mode: 'index', intersect: false },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value.toFixed(0);
-                            }
-                        }
+                        ticks: { callback: v => '$' + v.toFixed(0) }
                     }
                 },
                 plugins: {
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += '$' + context.parsed.y.toFixed(2);
-                                return label;
-                            }
+                            label: ctx => ctx.dataset.label + ': $' + ctx.parsed.y.toFixed(2)
                         }
                     }
                 }
