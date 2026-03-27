@@ -2,24 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>@ViewData["Title"] - Expense Tracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ── PWA Meta Tags ── -->
+    <meta name="application-name"    content="Expense Tracker" />
+    <meta name="description"         content="Track your monthly expenses simply and beautifully." />
+    <meta name="theme-color"         content="#4361ee" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Apple / iOS PWA -->
+    <meta name="apple-mobile-web-app-capable"          content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title"            content="Expenses" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-startup-image" href="/icons/splash.png" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Favicon / App Icon -->
+    <link rel="icon" type="image/png" sizes="32x32"  href="/icons/icon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="shortcut icon" href="/icons/icon-32.png" />
+
+    <!-- Stylesheets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
+
+    <!-- ══ TOP NAVBAR ══ -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-md">
             <div class="container-fluid">
+
+                <!-- Brand -->
                 <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">
                     <i class="fas fa-wallet"></i> Expense Tracker
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Desktop nav (hidden on mobile — replaced by bottom nav) -->
+                <div class="navbar-collapse collapse d-md-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 gap-1">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
                                 <i class="fas fa-chart-line"></i> Dashboard
@@ -37,47 +63,95 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Dashboard" asp-action="YearlyComparison">
-                                <i class="fas fa-calendar-alt"></i> Yearly View
+                                <i class="fas fa-calendar-alt"></i> Yearly
                             </a>
                         </li>
                     </ul>
-                    <li class="nav-item d-flex align-items-center gap-3">
 
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted" style="font-size:.8rem;">
+                            <i class="far fa-calendar me-1"></i>@DateTime.Now.ToString("MMMM yyyy")
+                        </span>
                         <form asp-action="Logout" asp-controller="Auth" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-outline-light btn-sm">
-                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            <button type="submit" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-sign-out-alt"></i> Logout
                             </button>
                         </form>
+                    </div>
+                </div>
 
-                        <span class="navbar-text text-white">
-                            <i class="far fa-calendar"></i> @DateTime.Now.ToString("MMMM yyyy")
-                        </span>
-
-                    </li>
-
-                </ul>
             </div>
-        </div>
-    </nav>
-</header>
-<div class="container">
-    <main role="main" class="pb-3">
-        @RenderBody()
-    </main>
-</div>
+        </nav>
+    </header>
 
-<footer class="border-top footer text-muted">
+    <!-- ══ MAIN CONTENT ══ -->
     <div class="container">
-        &copy; @DateTime.Now.Year - Expense Tracker - Tacking my silly expenses so you don't have to! <i
-        class="fas fa-smile"></i>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-</footer>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-@await RenderSectionAsync("Scripts", required: false)
+    <!-- ══ FOOTER (desktop only) ══ -->
+    <footer class="footer d-none d-md-block">
+        <div class="container">
+            &copy; @DateTime.Now.Year — Expense Tracker &nbsp;<i class="fas fa-smile"></i>
+        </div>
+    </footer>
+
+    <!-- ══ MOBILE BOTTOM NAV ══ -->
+    <nav class="bottom-nav" id="bottomNav" aria-label="Mobile navigation">
+
+        <a class="bottom-nav__item" asp-controller="Dashboard" asp-action="Index"
+           id="bnav-dashboard">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a class="bottom-nav__item" asp-controller="Expenses" asp-action="Index"
+           id="bnav-expenses">
+            <i class="fas fa-receipt"></i>
+            <span>Expenses</span>
+        </a>
+
+        <!-- FAB: Add Expense -->
+        <a class="bottom-nav__item bottom-nav__fab"
+           asp-controller="Expenses" asp-action="Create"
+           title="Add Expense">
+            <i class="fas fa-plus"></i>
+        </a>
+
+        <a class="bottom-nav__item" asp-controller="Categories" asp-action="Index"
+           id="bnav-categories">
+            <i class="fas fa-tags"></i>
+            <span>Categories</span>
+        </a>
+
+        <a class="bottom-nav__item" asp-controller="Dashboard" asp-action="YearlyComparison"
+           id="bnav-yearly">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Yearly</span>
+        </a>
+
+    </nav>
+
+    <!-- ══ PWA INSTALL BANNER ══ -->
+    <div id="pwa-install-banner" role="complementary" aria-label="Install app">
+        <p><strong>Add to Home Screen</strong><br />Install Expense Tracker for quick access.</p>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm" id="pwa-install-btn">Install</button>
+            <button class="btn btn-secondary btn-sm" id="pwa-dismiss-btn">Later</button>
+        </div>
+    </div>
+
+    <!-- ══ SCRIPTS ══ -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/pwa.js"  asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
 </body>
-
 </html>
