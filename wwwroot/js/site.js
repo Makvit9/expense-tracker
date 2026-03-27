@@ -7,6 +7,9 @@ $(document).ready(function () {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
+    // Make all Bootstrap tables scrollable on mobile
+    $('table.table').wrap('<div class="table-responsive"></div>');
+
     // Auto-hide alerts after 5 seconds
     setTimeout(function () {
         $('.alert:not(.alert-permanent)').fadeOut('slow');

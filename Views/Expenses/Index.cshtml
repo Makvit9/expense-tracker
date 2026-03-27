@@ -12,19 +12,23 @@
             </h1>
             <div>
                 <div class="btn-group me-2">
-                    <a asp-action="Index" asp-route-month="@(ViewBag.CurrentMonth == 1 ? 12 : ViewBag.CurrentMonth - 1)" 
-                       asp-route-year="@(ViewBag.CurrentMonth == 1 ? ViewBag.CurrentYear - 1 : ViewBag.CurrentYear)" 
+                    <a asp-action="Index"
+                       asp-route-month="@(ViewBag.CurrentMonth == 1 ? 12 : ViewBag.CurrentMonth - 1)"
+                       asp-route-year="@(ViewBag.CurrentMonth == 1 ? ViewBag.CurrentYear - 1 : ViewBag.CurrentYear)"
                        class="btn btn-outline-secondary">
                         <i class="fas fa-chevron-left"></i>
                     </a>
                     <button type="button" class="btn btn-outline-secondary" disabled>@ViewBag.MonthName</button>
-                    <a asp-action="Index" asp-route-month="@(ViewBag.CurrentMonth == 12 ? 1 : ViewBag.CurrentMonth + 1)" 
-                       asp-route-year="@(ViewBag.CurrentMonth == 12 ? ViewBag.CurrentYear + 1 : ViewBag.CurrentYear)" 
+                    <a asp-action="Index"
+                       asp-route-month="@(ViewBag.CurrentMonth == 12 ? 1 : ViewBag.CurrentMonth + 1)"
+                       asp-route-year="@(ViewBag.CurrentMonth == 12 ? ViewBag.CurrentYear + 1 : ViewBag.CurrentYear)"
                        class="btn btn-outline-secondary">
                         <i class="fas fa-chevron-right"></i>
                     </a>
                 </div>
-                <a asp-action="Create" asp-route-month="@ViewBag.CurrentMonth" asp-route-year="@ViewBag.CurrentYear" 
+                <a asp-action="Create"
+                   asp-route-month="@ViewBag.CurrentMonth"
+                   asp-route-year="@ViewBag.CurrentYear"
                    class="btn btn-primary">
                     <i class="fas fa-plus"></i> Add Expense
                 </a>
@@ -37,57 +41,71 @@
 {
     <!-- Summary Cards -->
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-4">
             <div class="card border-info">
                 <div class="card-body text-center">
-                    <h6 class="text-muted">Total Expenses</h6>
-                    <h3 class="text-info">@Model.Count()</h3>
+                    <h6 class="card-subtitle">Total</h6>
+                    <h3 class="card-title text-info mt-1">@Model.Count()</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-4">
             <div class="card border-danger">
                 <div class="card-body text-center">
-                    <h6 class="text-muted">Total Amount</h6>
-                    <h3 class="text-danger">$@Model.Sum(e => e.Amount).ToString("F2")</h3>
+                    <h6 class="card-subtitle">Amount</h6>
+                    <h3 class="card-title text-danger mt-1">$@Model.Sum(e => e.Amount).ToString("F2")</h3>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-4">
             <div class="card border-warning">
                 <div class="card-body text-center">
-                    <h6 class="text-muted">Average Expense</h6>
-                    <h3 class="text-warning">$@Model.Average(e => e.Amount).ToString("F2")</h3>
+                    <h6 class="card-subtitle">Average</h6>
+                    <h3 class="card-title text-warning mt-1">$@Model.Average(e => e.Amount).ToString("F2")</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Expenses by Week (newest first) -->
+    <!-- Week sections -->
     @for (int week = 5; week >= 1; week--)
     {
         var weekExpenses = Model.Where(e => e.WeekNumber == week).ToList();
-        
+
         @if (weekExpenses.Any())
         {
             var collapseId = $"weekCollapse{week}";
             <div class="card mb-3">
-                <div class="card-header bg-light" style="cursor: pointer;" 
-                     data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="true" aria-controls="@collapseId">
+
+                <!-- Week header -->
+                <div class="card-header"
+                     style="cursor:pointer;"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#@collapseId"
+                     aria-expanded="true"
+                     aria-controls="@collapseId">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-chevron-down me-2 collapse-icon" style="transition: transform 0.2s;"></i>
+                            <i class="fas fa-chevron-down me-2 collapse-icon"
+                               style="transition:transform .2s;"></i>
                             <span class="badge bg-secondary">Week @week</span>
-                            <span class="text-muted ms-2">@weekExpenses.Count expense(s)</span>
+                            <span class="text-muted ms-2" style="font-size:.85rem;">
+                                @weekExpenses.Count expense(s)
+                            </span>
                         </h5>
-                        <strong class="text-danger">Total: $@weekExpenses.Sum(e => e.Amount).ToString("F2")</strong>
+                        <strong class="text-danger">
+                            $@weekExpenses.Sum(e => e.Amount).ToString("F2")
+                        </strong>
                     </div>
                 </div>
+
                 <div class="collapse show" id="@collapseId">
-                    <div class="card-body p-0">
+
+                    <!-- ══ DESKTOP TABLE ══ -->
+                    <div class="expense-table-wrap">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
-                                <thead class="table-light">
+                                <thead>
                                     <tr>
                                         <th>Date</th>
                                         <th>Item Name</th>
@@ -108,7 +126,8 @@
                                             </td>
                                             <td>@expense.ItemName</td>
                                             <td>
-                                                <span class="badge" style="background-color: @expense.Category.ColorCode">
+                                                <span class="badge"
+                                                      style="background-color:@expense.Category.ColorCode">
                                                     @expense.Category.Name
                                                 </span>
                                             </td>
@@ -121,10 +140,12 @@
                                             </td>
                                             <td class="text-end">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a asp-action="Edit" asp-route-id="@expense.Id" class="btn btn-outline-warning" title="Edit">
+                                                    <a asp-action="Edit" asp-route-id="@expense.Id"
+                                                       class="btn btn-outline-warning" title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a asp-action="Delete" asp-route-id="@expense.Id" class="btn btn-outline-danger" title="Delete">
+                                                    <a asp-action="Delete" asp-route-id="@expense.Id"
+                                                       class="btn btn-outline-danger" title="Delete">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </div>
@@ -134,25 +155,98 @@
                                 </tbody>
                                 <tfoot class="table-light">
                                     <tr>
-                                        <td colspan="3" class="text-end"><strong>Week @week Subtotal:</strong></td>
-                                        <td class="text-end"><strong>$@weekExpenses.Sum(e => e.Amount).ToString("F2")</strong></td>
+                                        <td colspan="3" class="text-end">
+                                            <strong>Week @week Subtotal:</strong>
+                                        </td>
+                                        <td class="text-end">
+                                            <strong>$@weekExpenses.Sum(e => e.Amount).ToString("F2")</strong>
+                                        </td>
                                         <td colspan="2"></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
+                    <!-- end desktop table -->
+
+                    <!-- ══ MOBILE CARD LIST ══ -->
+                    <div class="expense-mobile-list">
+                        @foreach (var expense in weekExpenses.OrderByDescending(e => e.Date))
+                        {
+                            <div class="expense-row">
+
+                                <!-- Date -->
+                                <div class="expense-row__date">
+                                    <span class="expense-row__date-day">
+                                        @expense.Date.Day
+                                    </span>
+                                    <span class="expense-row__date-mon">
+                                        @expense.Date.ToString("MMM")
+                                    </span>
+                                </div>
+
+                                <!-- Item + category -->
+                                <div class="expense-row__body">
+                                    <div class="expense-row__name">@expense.ItemName</div>
+                                    <div class="expense-row__category">
+                                        <span class="badge"
+                                              style="background-color:@expense.Category.ColorCode">
+                                            @expense.Category.Name
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Amount + actions -->
+                                <div class="expense-row__right">
+                                    <span class="expense-row__amount">
+                                        $@expense.Amount.ToString("F2")
+                                    </span>
+                                    <div class="expense-row__actions">
+                                        <a asp-action="Edit" asp-route-id="@expense.Id"
+                                           class="btn btn-outline-warning"
+                                           title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@expense.Id"
+                                           class="btn btn-outline-danger"
+                                           title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+
+                        <!-- Mobile subtotal row -->
+                        <div style="padding:.65rem 1rem;
+                                    background:#f8f9fc;
+                                    border-top:1px solid var(--clr-border);
+                                    display:flex;
+                                    justify-content:space-between;
+                                    align-items:center;
+                                    font-size:.8rem;">
+                            <span class="text-muted fw-600">Week @week total</span>
+                            <strong class="text-danger" style="font-family:'DM Mono',monospace;">
+                                $@weekExpenses.Sum(e => e.Amount).ToString("F2")
+                            </strong>
+                        </div>
+                    </div>
+                    <!-- end mobile list -->
+
+                </div><!-- end collapse -->
+            </div><!-- end card -->
         }
     }
 
     <!-- Monthly Total -->
-    <div class="card border-primary">
+    <div class="card border-primary mb-3">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Monthly Total</h4>
-                <h3 class="text-primary mb-0">$@Model.Sum(e => e.Amount).ToString("F2")</h3>
+                <h3 class="text-primary mb-0">
+                    $@Model.Sum(e => e.Amount).ToString("F2")
+                </h3>
             </div>
         </div>
     </div>
@@ -164,7 +258,9 @@ else
             <i class="fas fa-inbox fa-4x text-muted mb-4"></i>
             <h4 class="text-muted">No expenses recorded for @ViewBag.MonthName</h4>
             <p class="text-muted">Start tracking your expenses to see them here.</p>
-            <a asp-action="Create" asp-route-month="@ViewBag.CurrentMonth" asp-route-year="@ViewBag.CurrentYear" 
+            <a asp-action="Create"
+               asp-route-month="@ViewBag.CurrentMonth"
+               asp-route-year="@ViewBag.CurrentYear"
                class="btn btn-primary btn-lg mt-3">
                 <i class="fas fa-plus"></i> Add Your First Expense
             </a>
@@ -173,7 +269,9 @@ else
 }
 
 <div class="mt-3">
-    <a asp-controller="Dashboard" asp-action="Index" asp-route-month="@ViewBag.CurrentMonth" asp-route-year="@ViewBag.CurrentYear" 
+    <a asp-controller="Dashboard" asp-action="Index"
+       asp-route-month="@ViewBag.CurrentMonth"
+       asp-route-year="@ViewBag.CurrentYear"
        class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left"></i> Back to Dashboard
     </a>
@@ -181,10 +279,10 @@ else
 
 @section Scripts {
     <script>
-        // Rotate chevron icon when collapsing/expanding
+        // Rotate chevron when collapsing/expanding
         document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function (header) {
             var target = document.querySelector(header.getAttribute('data-bs-target'));
-            var icon = header.querySelector('.collapse-icon');
+            var icon   = header.querySelector('.collapse-icon');
 
             target.addEventListener('hide.bs.collapse', function () {
                 icon.style.transform = 'rotate(-90deg)';

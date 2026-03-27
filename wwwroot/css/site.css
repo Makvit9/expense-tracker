@@ -161,25 +161,54 @@ body {
   transform: translateY(-2px);
 }
 
-/* FAB — center add button */
+/* FAB — center add button
+   Must explicitly reset every dimension inherited from .bottom-nav__item
+   so flex:1 and padding don't make it go oval.                          */
 .bottom-nav__fab {
-  width: 52px;
-  height: 52px;
-  background: var(--clr-accent);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Hard-lock the size — nothing can stretch this */
+  width: 54px  !important;
+  height: 54px !important;
+  min-width: 54px  !important;
+  max-width: 54px  !important;
+  min-height: 54px !important;
+  max-height: 54px !important;
+
+  /* Circle */
+  border-radius: 50% !important;
+
+  /* Override flex:1 that comes from .bottom-nav__item */
+  flex: 0 0 54px !important;
+
+  /* Override padding from .bottom-nav__item */
+  padding: 0 !important;
+
+  /* Visual */
+  background: var(--clr-accent) !important;
   color: white !important;
   font-size: 1.4rem;
-  box-shadow: 0 4px 16px rgba(67,97,238,.45);
+  box-shadow: 0 4px 20px rgba(67,97,238,.50);
+
+  /* Centre the + icon */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  /* Lift above the bar */
+  margin-top: -20px;
+
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  margin-bottom: 8px;
+}
+
+/* Hide any text node / span inside the FAB */
+.bottom-nav__fab span,
+.bottom-nav__fab > *:not(i) {
+  display: none !important;
 }
 
 .bottom-nav__fab:hover {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(67,97,238,.55);
+  box-shadow: 0 6px 28px rgba(67,97,238,.60);
+  color: white !important;
 }
 
 /* ─────────────────────────────────────────────
@@ -530,7 +559,7 @@ h1 i {
   padding: 0.75rem 1rem;
   background: #f8f9fc;
 }
-
+i
 .table td {
   padding: 0.85rem 1rem;
   vertical-align: middle;
@@ -839,6 +868,10 @@ h1 i {
     padding: 0.65rem 0.75rem;
   }
 
+  /* ── Swap table → card list on mobile ── */
+  .expense-table-wrap  { display: none !important; }
+  .expense-mobile-list { display: block !important; }
+
   /* Button groups stretch */
   .btn-group {
     width: 100%;
@@ -883,6 +916,325 @@ h1 i {
   body {
     padding-bottom: 0;
   }
+}
+
+/* ─────────────────────────────────────────────
+   CATEGORY BREAKDOWN ROW (Dashboard mobile)
+   Replaces the 3-column table on small screens
+───────────────────────────────────────────── */
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+.cat-row:last-child { border-bottom: none; }
+
+.cat-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-row__name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--clr-text);
+}
+
+.cat-row__bar-wrap {
+  margin-top: 4px;
+  height: 4px;
+  background: var(--clr-border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.cat-row__bar {
+  height: 100%;
+  background: var(--clr-accent);
+  border-radius: 100px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+.cat-row__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 1px;
+}
+
+.cat-row__amount {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--clr-text);
+}
+
+.cat-row__pct {
+  font-size: 0.72rem;
+  color: var(--clr-muted);
+}
+
+/* ─────────────────────────────────────────────
+   CATEGORY CARD ROW (Categories Index mobile)
+───────────────────────────────────────────── */
+.cat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+  transition: background 0.15s ease;
+}
+.cat-card:last-child { border-bottom: none; }
+.cat-card--inactive  { opacity: 0.6; }
+.cat-card:hover      { background: var(--clr-accent-lt); }
+
+.cat-card__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.cat-card__swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  display: block;
+}
+
+.cat-card__info {
+  min-width: 0;
+}
+
+.cat-card__name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--clr-text);
+}
+
+.cat-card__desc {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--clr-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cat-card__right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.cat-card__order {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cat-card__order .btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  border-radius: var(--radius-sm) !important;
+}
+
+.cat-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cat-card__actions .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* ─────────────────────────────────────────────
+   YEARLY ROW (YearlyComparison mobile)
+───────────────────────────────────────────── */
+.yearly-row {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+}
+.yearly-row:last-child  { border-bottom: none; }
+.yearly-row--total      { background: #f8f9fc; }
+
+.yearly-row__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.yearly-row__month {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--clr-text);
+}
+
+.yearly-row__figures {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.yearly-row__fig {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.yearly-row__label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--clr-muted);
+}
+
+.yearly-row__val {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────
+   MOBILE EXPENSE ROWS
+   Card-list layout replaces table on small screens.
+   The .table-responsive wrapper is hidden on mobile;
+   .expense-mobile-list is shown instead.
+───────────────────────────────────────────── */
+
+/* Default: mobile list hidden (table visible on desktop) */
+.expense-mobile-list  { display: none; }
+.expense-table-wrap   { display: block; }   /* table wrapper shown on desktop */
+
+/* Each expense rendered as a row card */
+.expense-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.expense-row:last-child {
+  border-bottom: none;
+}
+
+.expense-row:hover {
+  background: var(--clr-accent-lt);
+}
+
+/* Left: date block */
+.expense-row__date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+  line-height: 1.1;
+}
+
+.expense-row__date-day {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--clr-text);
+}
+
+.expense-row__date-mon {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--clr-muted);
+}
+
+/* Middle: item + category */
+.expense-row__body {
+  flex: 1;
+  min-width: 0;           /* allow text-overflow to work */
+}
+
+.expense-row__name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--clr-text);
+}
+
+.expense-row__category {
+  margin-top: 2px;
+}
+
+/* Right: amount + actions */
+.expense-row__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.expense-row__amount {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--clr-red);
+  white-space: nowrap;
+}
+
+.expense-row__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.expense-row__actions .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  border-radius: var(--radius-sm) !important;
+  flex-shrink: 0;
 }
 
 /* ─────────────────────────────────────────────

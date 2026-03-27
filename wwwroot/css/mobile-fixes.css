@@ -1,0 +1,42 @@
+/* ============================================================
+   mobile-fixes.css
+   Drop this into wwwroot/css/ and add ONE line to _Layout.cshtml:
+   <link rel="stylesheet" href="~/css/mobile-fixes.css" asp-append-version="true" />
+   AFTER the site.css line.
+
+   This file only overrides mobile behaviour.
+   You never need to touch site.css or any view for mobile-only tweaks.
+   ============================================================ */
+
+/* ── FAB: hard-lock circle, override all inherited flex sizing ── */
+.bottom-nav__fab {
+  width:      54px !important;
+  height:     54px !important;
+  min-width:  54px !important;
+  max-width:  54px !important;
+  min-height: 54px !important;
+  max-height: 54px !important;
+  flex:       0 0 54px !important;
+  padding:    0 !important;
+  border-radius: 50% !important;
+  background: var(--clr-accent) !important;
+  color:      white !important;
+  font-size:  1.4rem;
+  display:    flex !important;
+  align-items:     center;
+  justify-content: center;
+  margin-top: -20px;
+  box-shadow: 0 4px 20px rgba(67,97,238,.50);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.bottom-nav__fab span,
+.bottom-nav__fab > *:not(i) {
+  display: none !important;
+}
+
+.bottom-nav__fab:hover {
+  transform:  scale(1.08);
+  box-shadow: 0 6px 28px rgba(67,97,238,.60);
+  color:      white !important;
+}
